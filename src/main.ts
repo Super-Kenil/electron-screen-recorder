@@ -59,22 +59,23 @@ ipcMain.handle('GET_INPUT_SOURCES', async () => {
   return inputSources
 })
 
-ipcMain.handle('STOP_SCREEN_RECORDING', async (event, newSource: string, newBlob: Blob) => {
+ipcMain.handle('STOP_SCREEN_RECORDING', async (_event, newSource: string, newBlob: Blob) => {
+  console.log("🚀 ~ ipcMain.handle ~ newSource:", { newSource })
 
-  const { filePath } = await dialog.showSaveDialog({
-    buttonLabel: 'Save video',
-    defaultPath: `33-recording-${Date.now()}.webm`
-    // defaultPath: `${source.name}-recording-${Date.epicnow()}.webm`
-  })
+  // const { filePath } = await dialog.showSaveDialog({
+  //   buttonLabel: 'Save video',
+  //   defaultPath: `33-recording-${Date.now()}.webm`
+  //   // defaultPath: `${source.name}-recording-${Date.epicnow()}.webm`
+  // })
 
 
-  const blob = await (new Blob([newBlob], { type: 'video/webm; codecs=vp9' })).arrayBuffer()
+  // const blob = await (new Blob([newBlob], { type: 'video/webm; codecs=vp9' })).arrayBuffer()
 
-  if (filePath) {
-    writeFile(filePath, Buffer.from(blob), () => {
-      console.info('Video saved successfully')
-      return true
-    })
-  }
-  return false
+  // if (filePath) {
+  //   writeFile(filePath, Buffer.from(blob), () => {
+  //     console.info('Video saved successfully')
+  //     return true
+  //   })
+  // }
+  return { newSource, newBlob }
 })

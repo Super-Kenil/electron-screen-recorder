@@ -1,8 +1,5 @@
-import { desktopCapturer, dialog, ipcMain, ipcRenderer, Menu } from 'electron'
 import { Buffer } from 'buffer'
-import { writeFile } from 'fs'
-import { chrome } from 'process'
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { startTransition, useRef, useState } from 'react'
 import { FcOpenedFolder, FcVideoCall } from "react-icons/fc"
 import { Link } from 'react-router-dom'
 
@@ -15,26 +12,12 @@ const RecordingScreen = () => {
   const videoElRef = useRef<HTMLVideoElement>()
   const streamRecorderRef = useRef<MediaRecorder>(null)
 
-  // console.log('window.electron::: ', window.electron)
-
   let recordedChunks: Blob[] = []
-
 
   const getVideoSources = async () => {
 
     window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES')
-      .then((sources: Electron.DesktopCapturerSource[]) => {
-        console.log("🚀 ~ .then ~ sources:", sources)
-        setVideoSources(sources)
-
-        // const videoOptionsMenu = Menu.buildFromTemplate(sources.map((source) => {
-        //   return {
-        //     label: source.name,
-        //     click: () => selectSource(source)
-        //   }
-        // }))
-        // videoOptionsMenu.popup()
-      })
+      .then((sources: Electron.DesktopCapturerSource[]) => setVideoSources(sources))
       .catch((err) => {
         console.error(err)
       })
@@ -66,26 +49,21 @@ const RecordingScreen = () => {
       recordedChunks.push(event.data)
     }
 
-    streamRecorderRef.current.onstop = handleStopRecording
+    // streamRecorderRef.current.onstop = () => handleStopRecording(activeSource)
   }
 
   const handleStopRecording = async () => {
     streamRecorderRef.current.stop()
     setIsRecording(false)
-    console.log("🚀 ~ handleStopRecording ~ recordedChunks:", recordedChunks)
-
+    console.info('handleStopRECORDING::', {selectedSource,recordedChunks})
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
         type: 'video/webm; codecs=vp9'
       })
 
       const buffer: Buffer<ArrayBufferLike> = Buffer.from(await blob.arrayBuffer())
-      console.info('selectedSource:::', JSON.stringify(selectedSource))
-      // console.log("🚀 ~ handleStopRecording ~ buffer:", buffer)
-      const result =   await window.electron.ipcRenderer.invoke('STOP_SCREEN_RECORDING', JSON.stringify(selectedSource), buffer)
-
-      // console.log("🚀 ~ handleStopRecording ~ result:", result)
-
+      const result = await window.electron.ipcRenderer.invoke('STOP_SCREEN_RECORDING', JSON.stringify(selectedSource), buffer,)
+      console.log("🚀 ~ handleStopRecording ~ result:", result)
       recordedChunks = []
     }
   }
@@ -145,8 +123,10 @@ const RecordingScreen = () => {
                 key={src.id}
                 className='py-2 px-3 rounded-md border-2 cursor-pointer'
                 onClick={() => {
-                  setSelectedSource(src)
                   selectSource(src)
+                  startTransition(() => {
+                    setSelectedSource(src)
+                  })
                 }}
               >
                 {src.name}
