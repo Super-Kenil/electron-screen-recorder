@@ -72,20 +72,22 @@ const RecordingScreen = () => {
   const handleStopRecording = async () => {
     streamRecorderRef.current.stop()
     setIsRecording(false)
-    // console.log("🚀 ~ handleStopRecording ~ recordedChunks:", recordedChunks)
+    console.log("🚀 ~ handleStopRecording ~ recordedChunks:", recordedChunks)
 
-    const blob = new Blob(recordedChunks, {
-      type: 'video/webm; codecs=vp9'
-    })
+    if (recordedChunks.length) {
+      const blob = new Blob(recordedChunks, {
+        type: 'video/webm; codecs=vp9'
+      })
 
-    const buffer: Buffer<ArrayBufferLike> = Buffer.from(await blob.arrayBuffer())
-    console.info('selectedSource:::', JSON.stringify(selectedSource))
-    // console.log("🚀 ~ handleStopRecording ~ buffer:", buffer)
-    const result = await window.electron.ipcRenderer.sendSync('STOP_SCREEN_RECORDING', JSON.stringify(selectedSource), buffer)
+      const buffer: Buffer<ArrayBufferLike> = Buffer.from(await blob.arrayBuffer())
+      console.info('selectedSource:::', JSON.stringify(selectedSource))
+      // console.log("🚀 ~ handleStopRecording ~ buffer:", buffer)
+      const result =   await window.electron.ipcRenderer.invoke('STOP_SCREEN_RECORDING', JSON.stringify(selectedSource), buffer)
 
-    // console.log("🚀 ~ handleStopRecording ~ result:", result)
+      // console.log("🚀 ~ handleStopRecording ~ result:", result)
 
-    recordedChunks = []
+      recordedChunks = []
+    }
   }
 
   const handleStartRecording = () => {
