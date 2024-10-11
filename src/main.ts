@@ -60,22 +60,15 @@ ipcMain.handle('GET_INPUT_SOURCES', async () => {
 })
 
 ipcMain.handle('STOP_SCREEN_RECORDING', async (_event, newSource: string, newBlob: Blob) => {
-  console.log("🚀 ~ ipcMain.handle ~ newSource:", { newSource })
-
-  // const { filePath } = await dialog.showSaveDialog({
-  //   buttonLabel: 'Save video',
-  //   defaultPath: `33-recording-${Date.now()}.webm`
-  //   // defaultPath: `${source.name}-recording-${Date.epicnow()}.webm`
-  // })
-
-
-  // const blob = await (new Blob([newBlob], { type: 'video/webm; codecs=vp9' })).arrayBuffer()
-
-  // if (filePath) {
-  //   writeFile(filePath, Buffer.from(blob), () => {
-  //     console.info('Video saved successfully')
-  //     return true
-  //   })
-  // }
-  return { newSource, newBlob }
+  const source: Electron.DesktopCapturerSource = JSON.parse(newSource)
+  const { filePath } = await dialog.showSaveDialog({
+    buttonLabel: 'Save video',
+    defaultPath: `${source.name}-recording-${Date.now()}.webm`
+  })
+  const blob = await (new Blob([newBlob], { type: 'video/webm; codecs=vp9' })).arrayBuffer()
+  if (filePath) {
+    writeFile(filePath, Buffer.from(blob), () => true)
+    return true
+  }
+  return false
 })

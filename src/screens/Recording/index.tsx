@@ -15,16 +15,11 @@ const RecordingScreen = () => {
   let recordedChunks: Blob[] = []
 
   const getVideoSources = async () => {
-
-    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES')
-      .then((sources: Electron.DesktopCapturerSource[]) => setVideoSources(sources))
-      .catch((err) => {
-        console.error(err)
-      })
+    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then((sources: Electron.DesktopCapturerSource[]) => setVideoSources(sources))
   }
 
   const selectSource = async (source: Electron.DesktopCapturerSource) => {
-
+    const activeSource = source
     const constraints: MediaStreamConstraints = {
       audio: false,
       video: {
@@ -36,34 +31,26 @@ const RecordingScreen = () => {
         }
       }
     }
-
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-
     videoElRef.current.srcObject = stream
     videoElRef.current.play()
-
     const options: MediaRecorderOptions = { mimeType: 'video/webm; codecs=vp9' }
     streamRecorderRef.current = new MediaRecorder(stream, options)
-
-    streamRecorderRef.current.ondataavailable = (event: BlobEvent) => {
-      recordedChunks.push(event.data)
-    }
-
-    // streamRecorderRef.current.onstop = () => handleStopRecording(activeSource)
+    streamRecorderRef.current.ondataavailable = (event: BlobEvent) => recordedChunks.push(event.data)
+    streamRecorderRef.current.onstop = () => handleStopRecording(activeSource)
   }
 
-  const handleStopRecording = async () => {
+  const handleStopRecording = async (source: Electron.DesktopCapturerSource) => {
     streamRecorderRef.current.stop()
     setIsRecording(false)
-    console.info('handleStopRECORDING::', {selectedSource,recordedChunks})
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
         type: 'video/webm; codecs=vp9'
       })
-
       const buffer: Buffer<ArrayBufferLike> = Buffer.from(await blob.arrayBuffer())
-      const result = await window.electron.ipcRenderer.invoke('STOP_SCREEN_RECORDING', JSON.stringify(selectedSource), buffer,)
-      console.log("🚀 ~ handleStopRecording ~ result:", result)
+      const result = await window.electron.ipcRenderer.invoke('STOP_SCREEN_RECORDING', JSON.stringify(source), buffer,)
+      if (result) alert('Recording saved successfully')
+      else alert('Failed to save recording')
       recordedChunks = []
     }
   }
@@ -89,7 +76,7 @@ const RecordingScreen = () => {
           {isRecording ?
             <button
               className="px-3 py-1.5 rounded-md bg-red-100 text-red-950 flex items-center gap-2 border-red-500 border-2 disabled:bg-gray-300 disabled:border-gray-400 disabled:text-gray-900"
-              onClick={handleStopRecording}
+              onClick={() => handleStopRecording(selectedSource)}
             >
               🛑🫷 Stop
             </button>
