@@ -6,7 +6,7 @@ import RecordingScreen from './screens/Recording'
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<HomeScreen />} />
+      <Route path='/' element={<RecordingScreen />} />
       <Route path='/recording' element={<RecordingScreen/> } />
     </Routes>
   )
