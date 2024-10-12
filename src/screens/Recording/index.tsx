@@ -2,6 +2,8 @@ import { Buffer } from 'buffer'
 import React, { startTransition, useRef, useState } from 'react'
 import { FcOpenedFolder, FcVideoCall } from "react-icons/fc"
 import { Link } from 'react-router-dom'
+import UseAnimations from 'react-useanimations'
+import arrowLeftCircle from 'react-useanimations/lib/arrowLeftCircle'
 
 const RecordingScreen = () => {
 
@@ -64,7 +66,10 @@ const RecordingScreen = () => {
 
   return (
     <div>
-      <Link to="/" className='ms-4'> {'<-'}Back</Link>
+      <Link to="/" className='ms-2 flex gap-2 my-2'>
+        <UseAnimations animation={arrowLeftCircle} size={28} loop autoplay />
+        Back
+      </Link>
       <hr className='h-2' />
       <div className="flex flex-col">
         <h1 className=' text-3xl '>⚡ Electron Screen Recorder</h1>
