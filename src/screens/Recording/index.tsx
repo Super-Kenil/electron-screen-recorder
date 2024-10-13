@@ -65,14 +65,14 @@ const RecordingScreen = () => {
   }
 
   return (
-    <div>
+    <div className='overflow-y-hidden'>
       <Link to="/" className='ms-2 flex gap-2 my-2'>
         <UseAnimations animation={arrowLeftCircle} size={28} loop autoplay />
         Back
       </Link>
       <hr className='h-2' />
       <div className="flex flex-col">
-        <h1 className=' text-3xl '>⚡ Electron Screen Recorder</h1>
+        <h1 className=' text-3xl mx-auto mt-2'>⚡ Electron Screen Recorder</h1>
 
         <video ref={videoElRef} className='max-w-[720px] rounded-lg mx-auto my-4' />
 
