@@ -1,9 +1,10 @@
+import { motion } from "framer-motion"
 import React from 'react'
 import { Link } from 'react-router-dom'
 import UseAnimations from 'react-useanimations'
 import activityIcon from 'react-useanimations/lib/activity'
+
 import { AuroraBackground } from '../../components/ui/AuroraBackground'
-import { motion } from "framer-motion"
 
 const HomeScreen = () => {
   return (

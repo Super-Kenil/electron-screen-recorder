@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom'
 import UseAnimations from 'react-useanimations'
 import arrowLeftCircle from 'react-useanimations/lib/arrowLeftCircle'
 
+import { WavyBackground } from '../../components/ui/WavyBackground'
+import { cn } from '../../utils/cn'
+
 const RecordingScreen = () => {
 
-  const [videoSources, setVideoSources] = useState<Electron.DesktopCapturerSource[]>([])
+  const [videoSources, setVideoSources] = useState<Array<Electron.DesktopCapturerSource & { previewPng: string }>>([])
   const [selectedSource, setSelectedSource] = useState<Electron.DesktopCapturerSource>()
   const [isRecording, setIsRecording] = useState(false)
 
@@ -17,7 +20,17 @@ const RecordingScreen = () => {
   let recordedChunks: Blob[] = []
 
   const getVideoSources = async () => {
-    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then((sources: Electron.DesktopCapturerSource[]) => setVideoSources(sources))
+    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource & { png: ArrayBuffer,previewPng?: string }>) => {
+      console.log("🚀 ~ window.electron.ipcRenderer.invoke ~ sources:",)
+      // setVideoSources(sources)
+      const sourcesWithPreview = sources.map((src) => {
+        const previewPng = URL.createObjectURL(new Blob([sources[0].png]))
+        src.previewPng = previewPng
+        return src
+      })
+      console.log("🚀 ~ sourcesWithPreview ~ sourcesWithPreview:", sourcesWithPreview)
+      setVideoSources(sourcesWithPreview)
+    })
   }
 
   const selectSource = async (source: Electron.DesktopCapturerSource) => {
@@ -65,70 +78,67 @@ const RecordingScreen = () => {
   }
 
   return (
-    <div className='overflow-y-hidden'>
-      <Link to="/" className='ms-2 flex gap-2 my-2'>
-        <UseAnimations animation={arrowLeftCircle} size={28} loop autoplay />
-        Back
-      </Link>
-      <hr className='h-2' />
-      <div className="flex flex-col">
-        <h1 className=' text-3xl mx-auto mt-2'>⚡ Electron Screen Recorder</h1>
-
-        <video ref={videoElRef} className='max-w-[720px] rounded-lg mx-auto my-4' />
-
-        <div className="mx-auto">
-
-          {isRecording ?
-            <button
-              className="px-3 py-1.5 rounded-md bg-red-100 text-red-950 flex items-center gap-2 border-red-500 border-2 disabled:bg-gray-300 disabled:border-gray-400 disabled:text-gray-900"
-              onClick={() => handleStopRecording(selectedSource)}
-            >
-              🛑🫷 Stop
-            </button>
-            :
-            <button
-              disabled={!selectedSource}
-              className="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-950 flex items-center gap-2 border-emerald-500 border-2 disabled:bg-gray-300 disabled:border-gray-400 disabled:text-gray-900"
-              onClick={handleStartRecording}
-            >
-              <FcVideoCall size={18} /> Start
-            </button>
-          }
-
-        </div>
-        <hr className='h-2 m-2' />
-
-        <div className="w-max">
-          <button
-            className="px-3 py-1.5 border-2 rounded-md mx-auto flex items-center gap-2"
-            onClick={getVideoSources}
-          >
-            {selectedSource ?
-              <><strong>Record:</strong> {selectedSource.name}</> :
-              <><FcOpenedFolder /> Choose a Video Source</>
-            }
-          </button>
-
-          <ul className='flex flex-col gap-y-3 w-full'>
-            {videoSources.map((src) => (
-              <li
-                key={src.id}
-                className='py-2 px-3 rounded-md border-2 cursor-pointer'
-                onClick={() => {
-                  selectSource(src)
-                  startTransition(() => {
-                    setSelectedSource(src)
-                  })
-                }}
+    <WavyBackground className='h-full w-full'>
+      <div className='text-white'>
+        <Link to="/" className='ms-2 flex gap-2 mb-2'>
+          <UseAnimations animation={arrowLeftCircle} size={28} loop autoplay />
+          Back
+        </Link>
+        <hr className='h-2' />
+        <div className="flex flex-col">
+          <h1 className=' text-3xl mx-auto mt-2'>⚡ Electron Screen Recorder</h1>
+          <div className='mx-auto rounded-lg my-8 w-[720px] bg-gradient-to-r from-cyan-500 bg-slate-800' style={{ backgroundImage: `url(https://tailwindcss.com/img/background-pattern.svg)` }}>
+            <video ref={videoElRef} className={cn('max-w-[720px] rounded-lg mx-auto my-4 border-white', { 'border-2': selectedSource })} />
+          </div>
+          <div className="mx-auto">
+            {isRecording ?
+              <button
+                className="px-3 py-1.5 rounded-md bg-red-100 text-red-950 flex items-center gap-2 border-red-500 border-2 disabled:bg-slate-300 disabled:border-slate-400 disabled:text-slate-900"
+                onClick={() => handleStopRecording(selectedSource)}
               >
-                {src.name}
-              </li>
-            ))}
-          </ul>
+                🛑🫷 Stop
+              </button>
+              :
+              <button
+                disabled={!selectedSource}
+                className="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-950 flex items-center gap-2 border-emerald-500 border-2 disabled:bg-slate-300 disabled:border-slate-400 disabled:text-slate-900"
+                onClick={handleStartRecording}
+              >
+                <FcVideoCall size={18} /> Start
+              </button>
+            }
+          </div>
+          <hr className='h-2 m-2' />
+          <div className="w-max">
+            <button
+              className="px-3 py-1.5 border-2 rounded-md mx-auto flex items-center gap-2"
+              onClick={getVideoSources}
+            >
+              {selectedSource ?
+                <><strong>Record:</strong> {selectedSource.name}</> :
+                <><FcOpenedFolder /> Choose a Video Source</>
+              }
+            </button>
+            <ul className='flex flex-col gap-y-3 w-full'>
+              {videoSources.map((src) => (
+                <li
+                  key={src.id}
+                  className='py-2 px-3 rounded-md border-2 cursor-pointer'
+                  onClick={() => {
+                    selectSource(src)
+                    startTransition(() => {
+                      setSelectedSource(src)
+                    })
+                  }}
+                >
+                  {src.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-
       </div>
-    </div>
+    </WavyBackground>
   )
 }
 
