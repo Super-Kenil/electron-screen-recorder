@@ -7,6 +7,7 @@ import arrowLeftCircle from 'react-useanimations/lib/arrowLeftCircle'
 
 import { WavyBackground } from '../../components/ui/WavyBackground'
 import { cn } from '../../utils/cn'
+import ThumbnailPreview from './ThumbnailPreview'
 
 const RecordingScreen = () => {
 
@@ -20,11 +21,25 @@ const RecordingScreen = () => {
   let recordedChunks: Blob[] = []
 
   const getVideoSources = async () => {
-    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource & { png: ArrayBuffer,previewPng?: string }>) => {
-      console.log("🚀 ~ window.electron.ipcRenderer.invoke ~ sources:",)
+    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource & { png: ArrayBuffer, previewPng?: string }>) => {
       // setVideoSources(sources)
-      const sourcesWithPreview = sources.map((src) => {
-        const previewPng = URL.createObjectURL(new Blob([sources[0].png]))
+      const sourcesWithPreview = await sources.map((src) => {
+        // const pngBlob = new Blob([sources[0].png])
+        // console.log("🚀 ~ sourcesWithPreview ~ arrayBuffer:", arrayBuffer)
+        // const base64String = Buffer.from(arrayBuffer).toString('base64')
+        // console.log("🚀 ~ sourcesWithPreview ~ base64String:", base64String)
+
+        // const base65Png = await blobToBase64(pngBlob)
+        // console.log("🚀 ~ sourcesWithPreview ~ base65Png:", base65Png)
+
+        const blob = new Blob([sources[0].png], { type: 'image/png' })
+        const previewPng = URL.createObjectURL(blob)
+
+
+        // const image = new Image()
+        // image.src = previewPng
+        // document.body.appendChild(image)
+
         src.previewPng = previewPng
         return src
       })
@@ -131,6 +146,8 @@ const RecordingScreen = () => {
                     })
                   }}
                 >
+                  {/* <ThumbnailPreview blobUrl={src.previewPng} /> */}
+                  {/* <img src={`data:image/png;base64,${src.previewPng}`} alt={src.name} /> */}
                   {src.name}
                 </li>
               ))}
