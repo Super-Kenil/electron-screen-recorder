@@ -7,11 +7,10 @@ import arrowLeftCircle from 'react-useanimations/lib/arrowLeftCircle'
 
 import { WavyBackground } from '../../components/ui/WavyBackground'
 import { cn } from '../../utils/cn'
-import ThumbnailPreview from './ThumbnailPreview'
 
 const RecordingScreen = () => {
 
-  const [videoSources, setVideoSources] = useState<Array<Electron.DesktopCapturerSource & { previewPng: string }>>([])
+  const [videoSources, setVideoSources] = useState<Array<Electron.DesktopCapturerSource>>([])
   const [selectedSource, setSelectedSource] = useState<Electron.DesktopCapturerSource>()
   const [isRecording, setIsRecording] = useState(false)
 
@@ -21,8 +20,14 @@ const RecordingScreen = () => {
   let recordedChunks: Blob[] = []
 
   const getVideoSources = async () => {
-    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource & { png: ArrayBuffer, previewPng?: string }>) => {
+    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource>) => {
+      console.log("🚀 ~ window.electron.ipcRenderer.invoke ~ sources:", sources)
       // setVideoSources(sources)
+
+      // sources.map((src, index) => {
+      //   src.thumbnail.
+      // })
+
       const sourcesWithPreview = await sources.map((src) => {
         // const pngBlob = new Blob([sources[0].png])
         // console.log("🚀 ~ sourcesWithPreview ~ arrayBuffer:", arrayBuffer)
@@ -40,7 +45,7 @@ const RecordingScreen = () => {
         // image.src = previewPng
         // document.body.appendChild(image)
 
-        src.previewPng = previewPng
+        // src.previewPng = blob
         return src
       })
       console.log("🚀 ~ sourcesWithPreview ~ sourcesWithPreview:", sourcesWithPreview)
@@ -146,8 +151,7 @@ const RecordingScreen = () => {
                     })
                   }}
                 >
-                  {/* <ThumbnailPreview blobUrl={src.previewPng} /> */}
-                  {/* <img src={`data:image/png;base64,${src.previewPng}`} alt={src.name} /> */}
+                  <img src={src.thumbnail} alt={src.name} />
                   {src.name}
                 </li>
               ))}

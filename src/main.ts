@@ -55,8 +55,14 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 ipcMain.handle('GET_INPUT_SOURCES', async () => {
-  const inputSources = await desktopCapturer.getSources({ types: ['window', 'screen'], fetchWindowIcons: true })
-  return inputSources
+  const inputSources = await desktopCapturer.getSources({ types: ['window', 'screen'], fetchWindowIcons: true, thumbnailSize: { height: 256, width: 256 } })
+  const sourcesWithPreview = inputSources.map((source) => (
+    {
+      ...source,
+      thumbnail: source.thumbnail.toDataURL(),
+    }
+  ))
+  return sourcesWithPreview
 })
 
 ipcMain.handle('STOP_SCREEN_RECORDING', async (_event, newSource: string, newBlob: Blob) => {
