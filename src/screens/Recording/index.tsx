@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import type { DesktopCapturerSource } from 'electron'
 import React, { startTransition, useRef, useState } from 'react'
 import { FcOpenedFolder, FcVideoCall } from "react-icons/fc"
 import { Link } from 'react-router-dom'
@@ -26,6 +27,8 @@ const RecordingScreen = () => {
     const constraints: MediaStreamConstraints = {
       audio: false,
       video: {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: source.id
@@ -106,7 +109,7 @@ const RecordingScreen = () => {
               }
             </button>
             <ul className='flex flex-col gap-y-3 w-full'>
-              {videoSources.map((src) => (
+              {videoSources.map((src: DesktopCapturerSource) => (
                 <li key={src.id} className='py-2 px-3 rounded-md border-2 cursor-pointer' onClick={() => {
                   selectSource(src)
                   startTransition(
