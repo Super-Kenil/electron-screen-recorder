@@ -54,5 +54,22 @@
     "react-useanimations": "^2.10.0",
     "simplex-noise": "^4.0.3",
     "tailwind-merge": "^2.5.3"
+  },
+  "build": {
+    "appId":"com.superkenil.screenrecorder",
+    "productName":"Screen Recorder",
+    "copyright":"Copyright © Super-Kenil",
+    "mac":{
+      "target":"dmg",
+      "icon":"src/assets/icons/icon"
+    },
+    "win": {
+      "target":"nsis",
+      "icon":"src/assets/icons/icon.ico"
+    },
+    "linux":{
+      "target":"AppImage",
+      "icon":"src/assets/icons/icon"
+    }
   }
 }
