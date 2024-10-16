@@ -56,13 +56,7 @@ app.on('activate', () => {
 // code. You can also put them in separate files and import them here.
 ipcMain.handle('GET_INPUT_SOURCES', async () => {
   const inputSources = await desktopCapturer.getSources({ types: ['window', 'screen'], fetchWindowIcons: true, thumbnailSize: { height: 256, width: 256 } })
-  const sourcesWithPreview = inputSources.map((source) => (
-    {
-      ...source,
-      thumbnail: source.thumbnail.toDataURL(),
-    }
-  ))
-  return sourcesWithPreview
+  return inputSources.map((source) => ({ ...source, thumbnail: source.thumbnail.toDataURL() }))
 })
 
 ipcMain.handle('STOP_SCREEN_RECORDING', async (_event, newSource: string, newBlob: Blob) => {

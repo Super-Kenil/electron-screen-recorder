@@ -19,47 +19,13 @@ const RecordingScreen = () => {
 
   let recordedChunks: Blob[] = []
 
-  const getVideoSources = async () => {
-    window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(async (sources: Array<Electron.DesktopCapturerSource>) => {
-      console.log("🚀 ~ window.electron.ipcRenderer.invoke ~ sources:", sources)
-      // setVideoSources(sources)
-
-      // sources.map((src, index) => {
-      //   src.thumbnail.
-      // })
-
-      const sourcesWithPreview = await sources.map((src) => {
-        // const pngBlob = new Blob([sources[0].png])
-        // console.log("🚀 ~ sourcesWithPreview ~ arrayBuffer:", arrayBuffer)
-        // const base64String = Buffer.from(arrayBuffer).toString('base64')
-        // console.log("🚀 ~ sourcesWithPreview ~ base64String:", base64String)
-
-        // const base65Png = await blobToBase64(pngBlob)
-        // console.log("🚀 ~ sourcesWithPreview ~ base65Png:", base65Png)
-
-        const blob = new Blob([sources[0].png], { type: 'image/png' })
-        const previewPng = URL.createObjectURL(blob)
-
-
-        // const image = new Image()
-        // image.src = previewPng
-        // document.body.appendChild(image)
-
-        // src.previewPng = blob
-        return src
-      })
-      console.log("🚀 ~ sourcesWithPreview ~ sourcesWithPreview:", sourcesWithPreview)
-      setVideoSources(sourcesWithPreview)
-    })
-  }
+  const getVideoSources = async () => window.electron.ipcRenderer.invoke('GET_INPUT_SOURCES').then(setVideoSources)
 
   const selectSource = async (source: Electron.DesktopCapturerSource) => {
     const activeSource = source
     const constraints: MediaStreamConstraints = {
       audio: false,
       video: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: source.id
@@ -141,17 +107,16 @@ const RecordingScreen = () => {
             </button>
             <ul className='flex flex-col gap-y-3 w-full'>
               {videoSources.map((src) => (
-                <li
-                  key={src.id}
-                  className='py-2 px-3 rounded-md border-2 cursor-pointer'
-                  onClick={() => {
-                    selectSource(src)
-                    startTransition(() => {
+                <li key={src.id} className='py-2 px-3 rounded-md border-2 cursor-pointer' onClick={() => {
+                  selectSource(src)
+                  startTransition(
+                    () => {
                       setSelectedSource(src)
-                    })
-                  }}
+                    }
+                  )
+                }}
                 >
-                  <img src={src.thumbnail} alt={src.name} />
+                  {typeof src.thumbnail === 'string' && <img src={src.thumbnail} alt={src.name} />}
                   {src.name}
                 </li>
               ))}
