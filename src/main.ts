@@ -1,7 +1,8 @@
 import { app, BrowserWindow, desktopCapturer, dialog, ipcMain } from 'electron'
 import { writeFile } from 'fs'
 import path from 'path'
-import squirrel from "electron-squirrel-startup";
+import squirrel from "electron-squirrel-startup"
+import { ENVS } from './envs'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (squirrel) {
@@ -28,7 +29,11 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  if (ENVS.ENVIRONMENT_MODE === 'development') {
+    mainWindow.webContents.openDevTools()
+  } else if (ENVS.ENVIRONMENT_MODE === 'production') {
+    mainWindow.setMenuBarVisibility(false)
+  }
 }
 
 // This method will be called when Electron has finished

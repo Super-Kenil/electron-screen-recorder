@@ -1,9 +1,9 @@
 import { cn } from '../../utils/cn'
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react"
 
-interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
-  children: ReactNode;
-  showRadialGradient?: boolean;
+type AuroraBackgroundProps = React.HTMLProps<HTMLDivElement> & {
+  children: ReactNode
+  showRadialGradient?: boolean
 }
 
 export const AuroraBackground = ({
@@ -42,12 +42,12 @@ export const AuroraBackground = ({
             absolute -inset-[10px] opacity-50 will-change-transform`,
 
               showRadialGradient &&
-                `[mask-image:radial-gradient(ellipse_at_100%_0%,black_10%,var(--transparent)_70%)]`
+              `[mask-image:radial-gradient(ellipse_at_100%_0%,black_10%,var(--transparent)_70%)]`
             )}
           ></div>
         </div>
         {children}
       </div>
     </main>
-  );
-};
+  )
+}
