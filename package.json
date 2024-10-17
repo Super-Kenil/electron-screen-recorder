@@ -21,6 +21,7 @@
     "@electron-forge/plugin-fuses": "^7.5.0",
     "@electron-forge/plugin-vite": "^7.5.0",
     "@electron/fuses": "^1.8.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
@@ -56,20 +57,20 @@
     "tailwind-merge": "^2.5.3"
   },
   "build": {
-    "appId":"com.superkenil.screenrecorder",
-    "productName":"Screen Recorder",
-    "copyright":"Copyright © Super-Kenil",
-    "mac":{
-      "target":"dmg",
-      "icon":"src/assets/icons/icon"
+    "appId": "com.superkenil.screenrecorder",
+    "productName": "Screen Recorder",
+    "copyright": "Copyright © Super-Kenil",
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icons/icon"
     },
     "win": {
-      "target":"nsis",
-      "icon":"src/assets/icons/icon.ico"
+      "target": "nsis",
+      "icon": "src/assets/icon.ico"
     },
-    "linux":{
-      "target":"AppImage",
-      "icon":"src/assets/icons/icon"
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/icons/icon"
     }
   }
 }
