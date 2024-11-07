@@ -10,14 +10,32 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses'
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    name:'electron-screen-recorder',
+    name: 'electron-screen-recorder',
     executableName: 'electron-screen-recorder',
     icon: './src/assets/icon.png',
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({
-  
-  })],
+  makers: [
+    new MakerSquirrel({}),
+    new MakerZIP({}, ['darwin']),
+    // new MakerRpm({
+    //   options: {
+    //     name: 'electron-screen-recorder',
+    //     icon: './src/assets/icon.png',
+    //     version: '1.0.1',
+    //     description: 'My Electron application description'
+    //   }
+    // }),
+    new MakerDeb({
+      options: {
+        name: 'electron-screen-recorder',
+        maintainer: 'Super-Kenil',
+        icon: './src/assets/icon.png',
+        version: '1.0.1',
+        description: 'My Electron application description'
+      }
+    })
+  ],
   plugins: [
     new VitePlugin({
       // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.

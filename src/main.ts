@@ -12,6 +12,7 @@ if (squirrel) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    icon: './assets/icon.png',
     width: 800,
     height: 600,
     webPreferences: {
