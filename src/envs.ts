@@ -3,5 +3,5 @@ type ENVSType = {
 }
 
 export const ENVS: ENVSType = {
-  ENVIRONMENT_MODE: 'development'
+  ENVIRONMENT_MODE: 'production'
 }

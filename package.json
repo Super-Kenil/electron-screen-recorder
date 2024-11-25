@@ -1,7 +1,8 @@
 {
-  "name": "screen-recorder",
-  "productName": "Super-Kenil's Screen Recorder",
-  "version": "1.0.0",
+  "name": "electron-screen-recorder",
+  "executableName": "electron-screen-recorder",
+  "productName": "electron-screen-recorder",
+  "version": "1.0.1",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -9,7 +10,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "start": "electron-forge start"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.5.0",
@@ -45,6 +47,7 @@
   "license": "MIT",
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
+    "binutils": "^0.1.0",
     "clsx": "^2.1.1",
     "electron-squirrel-startup": "^1.0.1",
     "framer-motion": "^11.11.8",
@@ -56,9 +59,13 @@
     "simplex-noise": "^4.0.3",
     "tailwind-merge": "^2.5.3"
   },
+  "packagerConfig": {
+    "executableName": "electron-screen-recorder"
+  },
   "build": {
-    "appId": "com.superkenil.screenrecorder",
-    "productName": "Screen Recorder",
+    "appId": "electron-screen-recorder",
+    "executableName": "electron-screen-recorder",
+    "productName": "electron-screen-recorder",
     "copyright": "Copyright © Super-Kenil",
     "mac": {
       "target": "dmg",
@@ -69,8 +76,11 @@
       "icon": "src/assets/icon.ico"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "src/assets/icons/icon"
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "./src/assets/icon.png"
     }
   }
 }
